@@ -1,5 +1,5 @@
+import { Header } from "@/components/Header";
 import { Button, TextField } from "@mui/material";
-import { signOut } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -11,9 +11,9 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { auth, db } from "../../services/firebase";
+import { db } from "../../services/firebase";
+import { ConnectionItem } from "./components/ConnectionItem";
 
 type Connection = {
   id: string;
@@ -24,7 +24,6 @@ export function Connections() {
   const { user } = useAuth();
   const [newName, setNewName] = useState("");
   const [connections, setConnections] = useState<Connection[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -45,11 +44,6 @@ export function Connections() {
     return () => unsubscribe();
   }, [user]);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/signin");
-  };
-
   const handleAddConnection = async () => {
     if (!newName.trim() || !user?.uid) return;
 
@@ -67,45 +61,38 @@ export function Connections() {
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <Button variant="outlined" onClick={handleLogout} className="ml-auto">
-        Sair
-      </Button>
-      <h1 className="text-2xl font-bold mb-6">Suas Conexões</h1>
+    <>
+      <Header />
+      <div className="min-h-screen p-6">
+        <h1 className="text-2xl font-bold mb-6">Suas Conexões</h1>
 
-      <div className="flex gap-2">
-        <TextField
-          label="Nome da conexão"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          fullWidth
-        />
-        <Button
-          variant="contained"
-          onClick={handleAddConnection}
-          disabled={!user?.uid || !newName.trim()}
-        >
-          Adicionar
-        </Button>
-      </div>
-
-      <ul className="mt-6 space-y-2">
-        {connections.map((conn) => (
-          <li
-            key={conn.id}
-            className="bg-white p-4 rounded shadow border border-gray-200"
+        <div className="flex gap-2">
+          <TextField
+            label="Nome da conexão"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            fullWidth
+          />
+          <Button
+            variant="contained"
+            onClick={handleAddConnection}
+            disabled={!user?.uid || !newName.trim()}
           >
-            {conn.name}
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => handleDeleteConnection(conn.id)}
-            >
-              Excluir
-            </Button>
-          </li>
-        ))}
-      </ul>
-    </div>
+            Adicionar
+          </Button>
+        </div>
+
+        <ul className="mt-6 space-y-2">
+          {connections.map((conn) => (
+            <ConnectionItem
+              key={conn.id}
+              id={conn.id}
+              name={conn.name}
+              onDelete={handleDeleteConnection}
+            />
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }

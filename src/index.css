@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+@theme {
+  --bg-black: rgb(25, 25, 25);
+}
