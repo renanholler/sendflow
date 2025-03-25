@@ -1,15 +1,19 @@
 import { Button, TextField } from "@mui/material";
+import { signOut } from "firebase/auth";
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   query,
   serverTimestamp,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { db } from "../../services/firebase";
+import { auth, db } from "../../services/firebase";
 
 type Connection = {
   id: string;
@@ -20,6 +24,7 @@ export function Connections() {
   const { user } = useAuth();
   const [newName, setNewName] = useState("");
   const [connections, setConnections] = useState<Connection[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -40,6 +45,11 @@ export function Connections() {
     return () => unsubscribe();
   }, [user]);
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/signin");
+  };
+
   const handleAddConnection = async () => {
     if (!newName.trim() || !user?.uid) return;
 
@@ -52,8 +62,15 @@ export function Connections() {
     setNewName("");
   };
 
+  const handleDeleteConnection = async (id: string) => {
+    await deleteDoc(doc(db, "connections", id));
+  };
+
   return (
     <div className="min-h-screen p-6">
+      <Button variant="outlined" onClick={handleLogout} className="ml-auto">
+        Sair
+      </Button>
       <h1 className="text-2xl font-bold mb-6">Suas Conexões</h1>
 
       <div className="flex gap-2">
@@ -79,6 +96,13 @@ export function Connections() {
             className="bg-white p-4 rounded shadow border border-gray-200"
           >
             {conn.name}
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => handleDeleteConnection(conn.id)}
+            >
+              Excluir
+            </Button>
           </li>
         ))}
       </ul>
