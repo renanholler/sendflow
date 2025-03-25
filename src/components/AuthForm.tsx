@@ -1,7 +1,7 @@
 import { Alert, Button, TextField } from "@mui/material";
 import { UserCredential } from "firebase/auth";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { mapFirebaseError } from "../helpers/mapFirebaseError";
 
 type AuthFormProps = {
@@ -20,6 +20,7 @@ export function AuthForm({
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,7 +32,14 @@ export function AuthForm({
     try {
       await onSubmit(form.email, form.password);
       setError("");
-      if (successMessage) setSuccess(successMessage);
+      if (mode === "signup" && successMessage) {
+        setSuccess(successMessage);
+        setTimeout(() => {
+          navigate("/connections");
+        }, 2000);
+      } else {
+        navigate("/connections");
+      }
     } catch (err) {
       setSuccess("");
       setError(mapFirebaseError(err));

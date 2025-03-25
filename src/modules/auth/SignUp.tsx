@@ -1,6 +1,6 @@
+import { AuthForm } from "@/components/AuthForm";
+import { auth } from "@/services/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { AuthForm } from "../../components/AuthForm";
-import { auth } from "../../services/firebase";
 
 export function SignUp() {
   return (
