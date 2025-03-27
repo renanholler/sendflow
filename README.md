@@ -1,6 +1,6 @@
 # 📨 SendFlow
 
-Aplicacao fullstack desenvolvida como teste tecnico, utilizando **React**, **Firebase** e **Material UI**, com foco em envio de mensagens agendadas.
+Aplicação fullstack desenvolvida como teste técnico, utilizando **React**, **Firebase** e **Material UI**, com foco em envio de mensagens agendadas.
 
 ## ✅ Funcionalidades
 
