@@ -28,7 +28,7 @@ pnpm install
 pnpm dev
 ```
 
-Voce precisa configurar um arquivo `.env` com as chaves do Firebase:
+Você precisa configurar um arquivo `.env` com as chaves do Firebase:
 
 ```env
 VITE_FIREBASE_API_KEY=...
