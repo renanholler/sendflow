@@ -38,6 +38,7 @@ export function ConnectionSelector({ mode }: Props) {
         <BackButton />
         <h1 className="text-2xl font-bold">Selecione uma conexão</h1>
       </div>
+      {connections.length === 0 && <p>Nenhuma conexão encontrada</p>}
       <ul className="space-y-2">
         {connections.map((conn) => (
           <li key={conn.id}>
