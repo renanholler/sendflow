@@ -1,5 +1,7 @@
+import { BackButton } from "@/components/ui/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/services/firebase";
+import { listenContacts } from "@/services/firestore/contacts";
+import { addMessage, MessageStatus } from "@/services/firestore/messages";
 import {
   Button,
   Checkbox,
@@ -7,16 +9,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  addDoc,
-  collection,
-  onSnapshot,
-  query,
-  serverTimestamp,
-  where,
-} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type Contact = {
   id: string;
@@ -25,38 +20,32 @@ type Contact = {
 };
 
 export function MessageSender() {
-  const { id: connectionId } = useParams();
   const { user } = useAuth();
+  const { id: connectionId } = useParams();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [schedule, setSchedule] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user || !connectionId) return;
-
-    const q = query(
-      collection(db, "contacts"),
-      where("userId", "==", user.uid),
-      where("connectionId", "==", connectionId)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Contact[];
-      setContacts(data);
-    });
-
-    return () => unsubscribe();
+    return listenContacts(connectionId, setContacts);
   }, [user, connectionId]);
 
   const toggleContact = (id: string) => {
     setSelectedContacts((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedContacts.length === contacts.length) {
+      setSelectedContacts([]);
+    } else {
+      setSelectedContacts(contacts.map((c) => c.id));
+    }
   };
 
   const handleSubmit = async () => {
@@ -69,26 +58,29 @@ export function MessageSender() {
     )
       return;
 
-    await addDoc(collection(db, "messages"), {
+    await addMessage({
       userId: user.uid,
       connectionId,
       contactIds: selectedContacts,
       text: message.trim(),
-      scheduledAt: new Date(schedule),
-      status: "agendado",
-      createdAt: serverTimestamp(),
+      scheduledAt: Timestamp.fromDate(new Date(schedule)),
+      status: MessageStatus.AGENDADO,
     });
 
     setMessage("");
     setSchedule("");
     setSelectedContacts([]);
+    navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <Typography variant="h5" className="mb-4">
-        Agendar Mensagem
-      </Typography>
+    <div className="min-h-[84vh] p-6">
+      <div className="flex items-center gap-2 mb-6">
+        <BackButton />
+        <Typography variant="h5" className="mb-4">
+          Nova Mensagem
+        </Typography>
+      </div>
 
       <div className="mb-4">
         <TextField
@@ -97,6 +89,7 @@ export function MessageSender() {
           onChange={(e) => setMessage(e.target.value)}
           multiline
           fullWidth
+          rows={4}
         />
       </div>
 
@@ -111,21 +104,34 @@ export function MessageSender() {
         />
       </div>
 
-      <Typography variant="subtitle1" className="mb-2">
-        Selecionar Contatos
-      </Typography>
-      <div className="mb-4 space-y-1">
+      <div className="flex justify-between items-center mb-2">
+        <Typography variant="subtitle1">Selecionar Contatos</Typography>
+        <Button variant="contained" onClick={toggleSelectAll} size="small">
+          {selectedContacts.length === contacts.length
+            ? "Desmarcar Todos"
+            : "Selecionar Todos"}
+        </Button>
+      </div>
+      <div
+        className="mb-4 border rounded max-h-40 overflow-y-auto flex flex-wrap gap-2"
+        style={{ maxHeight: "200px" }}
+      >
         {contacts.map((contact) => (
-          <FormControlLabel
+          <div
+            className="hover:bg-gray-100 p-2 rounded w-fit"
+            style={{ flex: "0 0 auto" }}
             key={contact.id}
-            control={
-              <Checkbox
-                checked={selectedContacts.includes(contact.id)}
-                onChange={() => toggleContact(contact.id)}
-              />
-            }
-            label={`${contact.name} (${contact.phone})`}
-          />
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedContacts.includes(contact.id)}
+                  onChange={() => toggleContact(contact.id)}
+                />
+              }
+              label={`${contact.name} (${contact.phone})`}
+            />
+          </div>
         ))}
       </div>
 

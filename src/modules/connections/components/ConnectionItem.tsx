@@ -15,16 +15,15 @@ export function ConnectionItem({ id, name, onDelete }: Props) {
   };
 
   return (
-    <li className="bg-white rounded shadow border border-gray-200 flex items-stretch">
-      <div className="p-4 w-full cursor-pointer" onClick={handleNavigate}>
-        {name}
-      </div>
-      <Button
-        className="rounded-none"
-        variant="contained"
-        color="error"
-        onClick={() => onDelete(id)}
-      >
+    <li
+      className="bg-white p-4 rounded shadow border border-gray-200 flex justify-between items-center hover:bg-gray-200 hover:shadow-sm transition cursor-pointer"
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button")) return;
+        handleNavigate();
+      }}
+    >
+      <div className="w-full">{name}</div>
+      <Button variant="contained" color="error" onClick={() => onDelete(id)}>
         Excluir
       </Button>
     </li>

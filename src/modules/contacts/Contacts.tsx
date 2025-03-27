@@ -1,55 +1,33 @@
-import { Header } from "@/components/Header";
-import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/services/firebase";
-import { Button, Fab, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { MuiTelInput } from "mui-tel-input";
 
+import { BackButton } from "@/components/ui/BackButton";
 import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  serverTimestamp,
-  where,
-} from "firebase/firestore";
+  addContact,
+  Contact,
+  deleteContact,
+  listenContacts,
+} from "@/services/firestore/contacts";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ContactItem } from "./components/ContactItem";
-
-type Contact = {
-  id: string;
-  name: string;
-  phone: string;
-};
 
 export function Contacts() {
   const { id: connectionId } = useParams();
-  const { user } = useAuth();
   const [form, setForm] = useState({ name: "", phone: "" });
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user || !connectionId) return;
+    if (!connectionId) return;
 
-    const q = query(
-      collection(db, "contacts"),
-      where("userId", "==", user.uid),
-      where("connectionId", "==", connectionId)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Contact[];
+    const unsubscribe = listenContacts(connectionId, (data) => {
       setContacts(data);
+      setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [user, connectionId]);
+    return unsubscribe;
+  }, [connectionId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,37 +35,30 @@ export function Contacts() {
   };
 
   const handleSubmit = async () => {
-    if (!form.name.trim() || !form.phone.trim() || !user || !connectionId)
-      return;
-
-    await addDoc(collection(db, "contacts"), {
-      name: form.name.trim(),
-      phone: form.phone.trim(),
-      userId: user.uid,
-      connectionId,
-      createdAt: serverTimestamp(),
-    });
-
+    if (!form.name.trim() || !form.phone.trim() || !connectionId) return;
+    await addContact(connectionId, form.name, form.phone);
     setForm({ name: "", phone: "" });
   };
 
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, "contacts", id));
+    await deleteContact(id);
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh]">
+        <CircularProgress color="primary" />
+      </div>
+    );
+  }
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen p-6">
-        <h1 className="text-2xl font-bold mb-6">Contatos</h1>
-        <Button
-          variant="outlined"
-          className="mb-4"
-          component={Link}
-          to={`/connections/${connectionId}/messages/manage`}
-        >
-          Ver Mensagens
-        </Button>
+      <div className="min-h-[84vh] p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <BackButton />
+          <h1 className="text-2xl font-bold">Contatos</h1>
+        </div>
         <div className="flex gap-2 mb-6">
           <TextField
             label="Nome"
@@ -95,6 +66,7 @@ export function Contacts() {
             value={form.name}
             onChange={handleChange}
             className="w-3/4"
+            required
           />
           <MuiTelInput
             label="Telefone"
@@ -103,8 +75,13 @@ export function Contacts() {
             onChange={(value) => setForm((prev) => ({ ...prev, phone: value }))}
             defaultCountry="BR"
             className="w-1/4"
+            required
           />
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={!form.name.trim() || !form.phone.trim()}
+          >
             Adicionar
           </Button>
         </div>
@@ -120,19 +97,6 @@ export function Contacts() {
             />
           ))}
         </ul>
-        <Fab
-          color="primary"
-          variant="extended"
-          aria-label="agendar mensagem"
-          onClick={() => navigate(`/connections/${connectionId}/messages`)}
-          sx={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-          }}
-        >
-          Enviar mensagem
-        </Fab>
       </div>
     </>
   );

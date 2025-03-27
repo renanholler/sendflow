@@ -9,7 +9,7 @@ type Props = {
 
 export function ContactItem({ id, name, phone, onDelete }: Props) {
   return (
-    <li className="bg-white p-4 rounded shadow border border-gray-200 flex justify-between items-center">
+    <li className="bg-white p-4 rounded shadow border border-gray-200 flex justify-between items-center ">
       <div>
         <p className="font-medium">{name}</p>
         <p className="text-sm text-gray-500">{phone}</p>
