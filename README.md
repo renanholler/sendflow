@@ -9,10 +9,10 @@
 <br>
 <br>
 <div align="center">
-  <img width="500" src="https://github.com/user-attachments/assets/659959c2-49d0-4429-b68e-dd84a3f85a3c" />
-  <img width="500" src="https://github.com/user-attachments/assets/8708cd9e-33e6-4d20-8f4e-245516fd80ea" />
-  <img width="500" src="https://github.com/user-attachments/assets/c1ea113e-8113-499c-8e0a-283c76cdc639" />
-  <img width="500" src="https://github.com/user-attachments/assets/8a1d9deb-4fd9-4e6b-8f54-b1f896e0d847" />
+  <img width="400" src="https://github.com/user-attachments/assets/659959c2-49d0-4429-b68e-dd84a3f85a3c" />
+  <img width="400" src="https://github.com/user-attachments/assets/8708cd9e-33e6-4d20-8f4e-245516fd80ea" />
+  <img width="400" src="https://github.com/user-attachments/assets/c1ea113e-8113-499c-8e0a-283c76cdc639" />
+  <img width="400" src="https://github.com/user-attachments/assets/8a1d9deb-4fd9-4e6b-8f54-b1f896e0d847" />
 </div>
 
 ## ✅ Funcionalidades
