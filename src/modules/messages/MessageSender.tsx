@@ -1,7 +1,5 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { listenContacts } from "@/services/firestore/contacts";
-import { addMessage, MessageStatus } from "@/services/firestore/messages";
 import {
   Button,
   Checkbox,
@@ -12,6 +10,8 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { listenContacts } from "../contacts/contactsModel";
+import { addMessage, MessageStatus } from "./messages";
 
 type Contact = {
   id: string;

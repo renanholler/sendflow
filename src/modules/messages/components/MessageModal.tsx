@@ -1,7 +1,7 @@
-import { MessageStatus } from "@/services/firestore/messages";
 import CloseIcon from "@mui/icons-material/Close";
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
+import { MessageStatus } from "../messages";
 
 type Props = {
   message: {

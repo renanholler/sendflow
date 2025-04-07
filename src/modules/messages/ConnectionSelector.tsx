@@ -1,10 +1,10 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { getConnections } from "@/services/firestore/connections";
 import { Connection, ConnectionMode } from "@/types/connections";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getConnections } from "../connections/connectionsModel";
 
 type Props = {
   mode: ConnectionMode;

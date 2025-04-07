@@ -2,32 +2,19 @@ import { Button, CircularProgress, TextField } from "@mui/material";
 import { MuiTelInput } from "mui-tel-input";
 
 import { BackButton } from "@/components/ui/BackButton";
-import {
-  addContact,
-  Contact,
-  deleteContact,
-  listenContacts,
-} from "@/services/firestore/contacts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ContactItem } from "./components/ContactItem";
+import {
+  addContact,
+  deleteContact,
+  useContactsListener,
+} from "./contactsModel";
 
 export function Contacts() {
   const { id: connectionId } = useParams();
   const [form, setForm] = useState({ name: "", phone: "" });
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!connectionId) return;
-
-    const unsubscribe = listenContacts(connectionId, (data) => {
-      setContacts(data);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, [connectionId]);
+  const { contacts, loading } = useContactsListener(connectionId);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

@@ -1,5 +1,5 @@
-import { MessageStatus } from "@/services/firestore/messages";
 import { Timestamp } from "firebase/firestore";
+import { MessageStatus } from "../messages";
 
 type Props = {
   msg: {

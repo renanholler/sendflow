@@ -54,3 +54,23 @@ export async function addContact(
 export async function deleteContact(id: string) {
   await deleteDoc(doc(db, "contacts", id));
 }
+
+import { useEffect, useState } from "react";
+
+export function useContactsListener(connectionId?: string) {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!connectionId) return;
+
+    const unsubscribe = listenContacts(connectionId, (data) => {
+      setContacts(data);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [connectionId]);
+
+  return { contacts, loading };
+}

@@ -1,12 +1,12 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { listenMessages, MessageStatus } from "@/services/firestore/messages";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MessageItem } from "./components/MessageItem";
 import { MessageModal } from "./components/MessageModal";
+import { listenMessages, MessageStatus } from "./messages";
 
 type Message = {
   id: string;

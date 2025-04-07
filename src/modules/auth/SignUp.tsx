@@ -1,5 +1,5 @@
-import { registerUser } from "@/services/firestore/users";
 import { AuthForm } from "./components/AuthForm";
+import { registerUser } from "./users";
 
 export function SignUp() {
   return (

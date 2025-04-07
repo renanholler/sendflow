@@ -1,14 +1,14 @@
 import { BackButton } from "@/components/ui/BackButton";
-import {
-  addConnection,
-  deleteConnection,
-  listenConnections,
-} from "@/services/firestore/connections";
 import { Connection } from "@/types/connections";
 import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { ConnectionItem } from "./components/ConnectionItem";
+import {
+  addConnection,
+  deleteConnection,
+  listenConnections,
+} from "./connectionsModel";
 
 export function Connections() {
   const { user } = useAuth();
