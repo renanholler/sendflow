@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MessageItem } from "./components/MessageItem";
 import { MessageModal } from "./components/MessageModal";
-import { listenMessages, MessageStatus } from "./messages";
+import { listenMessages, MessageStatus } from "./MessagesModel";
 
 type Message = {
   id: string;

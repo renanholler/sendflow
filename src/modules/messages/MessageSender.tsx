@@ -10,8 +10,8 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { listenContacts } from "../contacts/contactsModel";
-import { addMessage, MessageStatus } from "./messages";
+import { listenContacts } from "../contacts/ContactsModel";
+import { addMessage, MessageStatus } from "./MessagesModel";
 
 type Contact = {
   id: string;

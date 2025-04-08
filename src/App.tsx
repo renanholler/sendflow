@@ -7,6 +7,7 @@ import {
 import { AppLayout } from "./components/layout/AppLayout";
 import { SignIn, SignUp } from "./modules/auth";
 import { Connections } from "./modules/connections";
+import { ConnectionMode } from "./modules/connections/ConnectionsModel";
 import { Contacts } from "./modules/contacts";
 import Dashboard from "./modules/dashboard/Dashboard";
 import {
@@ -15,7 +16,6 @@ import {
   MessageSender,
 } from "./modules/messages";
 import { PrivateRoute } from "./routes/PrivateRoute";
-import { ConnectionMode } from "./types/connections";
 
 function App() {
   return (

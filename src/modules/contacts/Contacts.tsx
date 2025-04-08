@@ -9,7 +9,7 @@ import {
   addContact,
   deleteContact,
   useContactsListener,
-} from "./contactsModel";
+} from "./ContactsModel";
 
 export function Contacts() {
   const { id: connectionId } = useParams();

@@ -1,5 +1,5 @@
 import { AuthForm } from "./components/AuthForm";
-import { registerUser } from "./users";
+import { registerUser } from "./UsersModel";
 
 export function SignUp() {
   return (

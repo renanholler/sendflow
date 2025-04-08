@@ -1,10 +1,13 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { Connection, ConnectionMode } from "@/types/connections";
+import {
+  Connection,
+  ConnectionMode,
+  getConnections,
+} from "@/modules/connections/ConnectionsModel";
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getConnections } from "../connections/connectionsModel";
 
 type Props = {
   mode: ConnectionMode;

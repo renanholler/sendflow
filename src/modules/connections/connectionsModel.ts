@@ -18,6 +18,11 @@ export type Connection = {
   createdAt?: Date;
 };
 
+export enum ConnectionMode {
+  SEND = "send",
+  LIST = "list",
+}
+
 export function listenConnections(
   userId: string,
   callback: (data: Connection[]) => void
