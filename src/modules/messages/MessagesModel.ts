@@ -1,15 +1,18 @@
+import { useRxObservable } from "@/hooks/useRxObservable";
 import { db } from "@/services/firebase";
 import {
   addDoc,
   collection,
   doc,
-  onSnapshot,
   query,
   serverTimestamp,
   Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
+import { useMemo } from "react";
+import { collectionData } from "rxfire/firestore";
+import { Observable } from "rxjs";
 
 export enum Collection {
   MESSAGES = "messages",
@@ -30,35 +33,40 @@ export type Message = {
   status: MessageStatus;
 };
 
-export function listenMessages(
-  userId: string,
-  connectionId: string,
-  callback: (data: Message[]) => void
-) {
+const messagesCollection = collection(db, Collection.MESSAGES);
+
+export function listenMessages(userId: string, connectionId: string) {
   const q = query(
-    collection(db, Collection.MESSAGES),
+    messagesCollection,
     where("userId", "==", userId),
     where("connectionId", "==", connectionId)
   );
-
-  return onSnapshot(q, (snapshot) => {
-    const messages = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Message, "id">),
-    }));
-    callback(messages);
-  });
+  return collectionData(q, { idField: "id" }) as Observable<Message[]>;
 }
 
 export async function addMessage(data: Omit<Message, "id">) {
-  await addDoc(collection(db, Collection.MESSAGES), {
+  await addDoc(messagesCollection, {
     ...data,
     createdAt: serverTimestamp(),
   });
 }
 
 export async function updateMessageStatus(id: string, status: MessageStatus) {
-  await updateDoc(doc(db, Collection.MESSAGES, id), {
+  await updateDoc(doc(messagesCollection, id), {
     status,
   });
+}
+
+export function useMessagesListener(userId: string, connectionId: string) {
+  const observable$ = useMemo(
+    () => listenMessages(userId, connectionId),
+    [userId, connectionId]
+  );
+  const { data: messages, loading } = useRxObservable<Message[]>(observable$);
+
+  if (!messages) {
+    return { messages: [], loading };
+  }
+
+  return { messages, loading };
 }

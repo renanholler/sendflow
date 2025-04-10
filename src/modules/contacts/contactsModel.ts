@@ -1,14 +1,17 @@
+import { useRxObservable } from "@/hooks/useRxObservable";
 import { db } from "@/services/firebase";
 import {
   addDoc,
   collection,
   deleteDoc,
   doc,
-  onSnapshot,
   query,
   serverTimestamp,
   where,
 } from "firebase/firestore";
+import { useMemo } from "react";
+import { collectionData } from "rxfire/firestore";
+import { Observable } from "rxjs";
 
 export type Contact = {
   id: string;
@@ -18,22 +21,14 @@ export type Contact = {
   createdAt?: Date;
 };
 
-export function listenContacts(
-  connectionId: string,
-  callback: (data: Contact[]) => void
-) {
+const contactsCollection = collection(db, "contacts");
+
+export function listenContacts(connectionId: string) {
   const q = query(
-    collection(db, "contacts"),
+    contactsCollection,
     where("connectionId", "==", connectionId)
   );
-
-  return onSnapshot(q, (snapshot) => {
-    const contacts = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Contact, "id">),
-    }));
-    callback(contacts);
-  });
+  return collectionData(q, { idField: "id" }) as Observable<Contact[]>;
 }
 
 export async function addContact(
@@ -55,22 +50,16 @@ export async function deleteContact(id: string) {
   await deleteDoc(doc(db, "contacts", id));
 }
 
-import { useEffect, useState } from "react";
+export function useContactsListener(connectionId: string) {
+  const observable$ = useMemo(
+    () => listenContacts(connectionId),
+    [connectionId]
+  );
+  const { data: contacts, loading } = useRxObservable<Contact[]>(observable$);
 
-export function useContactsListener(connectionId?: string) {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!connectionId) return;
-
-    const unsubscribe = listenContacts(connectionId, (data) => {
-      setContacts(data);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, [connectionId]);
+  if (!contacts) {
+    return { contacts: [], loading };
+  }
 
   return { contacts, loading };
 }

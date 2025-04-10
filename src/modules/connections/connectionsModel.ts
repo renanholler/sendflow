@@ -1,15 +1,19 @@
+import { useRxObservable } from "@/hooks/useRxObservable";
 import { db } from "@/services/firebase";
 import {
   addDoc,
   collection,
   deleteDoc,
   doc,
-  getDocs,
-  onSnapshot,
   query,
   serverTimestamp,
   where,
 } from "firebase/firestore";
+import { useMemo } from "react";
+import { collectionData } from "rxfire/firestore";
+import { Observable } from "rxjs";
+
+const connectionsCollection = collection(db, "connections");
 
 export type Connection = {
   id: string;
@@ -23,25 +27,15 @@ export enum ConnectionMode {
   LIST = "list",
 }
 
-export function listenConnections(
-  userId: string,
-  callback: (data: Connection[]) => void
-) {
-  const q = query(collection(db, "connections"), where("userId", "==", userId));
-
-  return onSnapshot(q, (snapshot) => {
-    const connections = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Connection, "id">),
-    }));
-    callback(connections);
-  });
+export function listenConnections(userId: string): Observable<Connection[]> {
+  const q = query(connectionsCollection, where("userId", "==", userId));
+  return collectionData(q, { idField: "id" }) as Observable<Connection[]>;
 }
 
 export async function addConnection(userId: string, name: string) {
   if (!name.trim()) return;
 
-  await addDoc(collection(db, "connections"), {
+  await addDoc(connectionsCollection, {
     name: name.trim(),
     userId,
     createdAt: serverTimestamp(),
@@ -52,11 +46,14 @@ export async function deleteConnection(id: string) {
   await deleteDoc(doc(db, "connections", id));
 }
 
-export async function getConnections(userId: string): Promise<Connection[]> {
-  const q = query(collection(db, "connections"), where("userId", "==", userId));
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as Omit<Connection, "id">),
-  }));
+export function useConnectionsListener(userId: string) {
+  const observable$ = useMemo(() => listenConnections(userId), [userId]);
+  const { data: connections, loading } =
+    useRxObservable<Connection[]>(observable$);
+
+  if (!connections) {
+    return { connections: [], loading };
+  }
+
+  return { connections, loading };
 }

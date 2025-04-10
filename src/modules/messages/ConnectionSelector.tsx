@@ -1,12 +1,10 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Connection,
   ConnectionMode,
-  getConnections,
+  useConnectionsListener,
 } from "@/modules/connections/ConnectionsModel";
 import { CircularProgress } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -16,16 +14,7 @@ type Props = {
 export function ConnectionSelector({ mode }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user) return;
-    getConnections(user.uid).then((data) => {
-      setConnections(data);
-      setLoading(false);
-    });
-  }, [user]);
+  const { connections, loading } = useConnectionsListener(user?.uid || "");
 
   if (loading) {
     return (

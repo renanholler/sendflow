@@ -8,31 +8,19 @@ import {
   Typography,
 } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { listenContacts } from "../contacts/ContactsModel";
+import { useContactsListener } from "../contacts/ContactsModel";
 import { addMessage, MessageStatus } from "./MessagesModel";
-
-type Contact = {
-  id: string;
-  name: string;
-  phone: string;
-};
 
 export function MessageSender() {
   const { user } = useAuth();
   const { id: connectionId } = useParams();
-
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const { contacts } = useContactsListener(connectionId || "");
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [schedule, setSchedule] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user || !connectionId) return;
-    return listenContacts(connectionId, setContacts);
-  }, [user, connectionId]);
 
   const toggleContact = (id: string) => {
     setSelectedContacts((prev) =>

@@ -1,27 +1,23 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { Button, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { ConnectionItem } from "./components/ConnectionItem";
 import {
   addConnection,
-  Connection,
   deleteConnection,
-  listenConnections,
+  useConnectionsListener,
 } from "./ConnectionsModel";
 
 export function Connections() {
   const { user } = useAuth();
   const [newName, setNewName] = useState("");
-  const [connections, setConnections] = useState<Connection[]>([]);
+  const { connections } = useConnectionsListener(user?.uid || "");
 
-  useEffect(() => {
-    if (!user?.uid) return;
-    return listenConnections(user.uid, setConnections);
-  }, [user]);
+  if (!user) return null;
 
   const handleAddConnection = async () => {
-    if (!newName.trim() || !user?.uid) return;
+    if (!newName.trim()) return;
     await addConnection(user.uid, newName);
     setNewName("");
   };
@@ -47,14 +43,14 @@ export function Connections() {
         <Button
           variant="contained"
           onClick={handleAddConnection}
-          disabled={!user?.uid || !newName.trim()}
+          disabled={!newName.trim()}
         >
           Adicionar
         </Button>
       </div>
 
       <ul className="mt-6 space-y-2">
-        {connections.map((conn) => (
+        {connections?.map((conn) => (
           <ConnectionItem
             key={conn.id}
             id={conn.id}

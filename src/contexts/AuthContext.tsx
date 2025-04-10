@@ -1,5 +1,6 @@
-import { User, onAuthStateChanged } from "firebase/auth";
+import { User } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
+import { authState } from "rxfire/auth";
 import { auth } from "../services/firebase";
 
 type AuthContextType = {
@@ -17,12 +18,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const subscription = authState(auth).subscribe((user) => {
       setUser(user);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => subscription.unsubscribe();
   }, []);
 
   return (

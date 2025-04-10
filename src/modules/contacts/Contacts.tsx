@@ -14,7 +14,7 @@ import {
 export function Contacts() {
   const { id: connectionId } = useParams();
   const [form, setForm] = useState({ name: "", phone: "" });
-  const { contacts, loading } = useContactsListener(connectionId);
+  const { contacts, loading } = useContactsListener(connectionId || "");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -74,7 +74,7 @@ export function Contacts() {
         </div>
 
         <ul className="space-y-2">
-          {contacts.map((contact) => (
+          {contacts?.map((contact) => (
             <ContactItem
               key={contact.id}
               id={contact.id}
