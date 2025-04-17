@@ -1,6 +1,6 @@
-import { useAuth } from "@/contexts/AuthContext";
 import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { ActionButton } from "./components/ActionButton";
 
 export default function Dashboard() {

@@ -1,17 +1,19 @@
 import { BackButton } from "@/components/ui/BackButton";
-import { useAuth } from "@/contexts/AuthContext";
 import {
+  Connection,
   ConnectionMode,
   useConnectionsListener,
 } from "@/modules/connections/ConnectionsModel";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
-type Props = {
+interface ConnectionSelectorProps {
   mode: ConnectionMode;
-};
+}
 
-export function ConnectionSelector({ mode }: Props) {
+export function ConnectionSelector(props: ConnectionSelectorProps) {
+  const { mode } = props;
   const { user } = useAuth();
   const navigate = useNavigate();
   const { connections, loading } = useConnectionsListener(user?.uid || "");
@@ -32,7 +34,7 @@ export function ConnectionSelector({ mode }: Props) {
       </div>
       {connections.length === 0 && <p>Nenhuma conexão encontrada</p>}
       <ul className="space-y-2">
-        {connections.map((conn) => (
+        {connections.map((conn: Connection) => (
           <li key={conn.id}>
             <button
               onClick={() =>

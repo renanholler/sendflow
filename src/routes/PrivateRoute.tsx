@@ -1,12 +1,21 @@
-import { PropsWithChildren } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../modules/auth/AuthContext";
 
-export function PrivateRoute({ children }: PropsWithChildren) {
+interface PrivateRouteProps {
+  children: React.ReactNode;
+}
+
+export const PrivateRoute = (props: PrivateRouteProps) => {
+  const { children } = props;
   const { user, loading } = useAuth();
 
-  if (loading) return <p>Carregando...</p>;
-  if (!user) return <Navigate to="/signin" />;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/signin" />;
+  }
 
   return <>{children}</>;
-}
+};

@@ -1,4 +1,4 @@
-import { useRxObservable } from "@/hooks/useRxObservable";
+import useObservable from "@/hooks/useObservable";
 import { db } from "@/services/firebase";
 import {
   addDoc,
@@ -10,7 +10,6 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useMemo } from "react";
 import { collectionData } from "rxfire/firestore";
 import { Observable } from "rxjs";
 
@@ -58,15 +57,11 @@ export async function updateMessageStatus(id: string, status: MessageStatus) {
 }
 
 export function useMessagesListener(userId: string, connectionId: string) {
-  const observable$ = useMemo(
+  const messages$ = useObservable(
     () => listenMessages(userId, connectionId),
-    [userId, connectionId]
+    [userId, connectionId],
+    []
   );
-  const { data: messages, loading } = useRxObservable<Message[]>(observable$);
 
-  if (!messages) {
-    return { messages: [], loading };
-  }
-
-  return { messages, loading };
+  return { messages: messages$ || [], loading: !messages$ };
 }

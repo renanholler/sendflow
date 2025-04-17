@@ -1,4 +1,4 @@
-import { useRxObservable } from "@/hooks/useRxObservable";
+import useObservable from "@/hooks/useObservable";
 import { db } from "@/services/firebase";
 import {
   addDoc,
@@ -9,7 +9,6 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-import { useMemo } from "react";
 import { collectionData } from "rxfire/firestore";
 import { Observable } from "rxjs";
 
@@ -43,17 +42,15 @@ export async function addConnection(userId: string, name: string) {
 }
 
 export async function deleteConnection(id: string) {
-  await deleteDoc(doc(db, "connections", id));
+  await deleteDoc(doc(connectionsCollection, id));
 }
 
 export function useConnectionsListener(userId: string) {
-  const observable$ = useMemo(() => listenConnections(userId), [userId]);
-  const { data: connections, loading } =
-    useRxObservable<Connection[]>(observable$);
+  const connections$ = useObservable(
+    () => listenConnections(userId),
+    [userId],
+    []
+  );
 
-  if (!connections) {
-    return { connections: [], loading };
-  }
-
-  return { connections, loading };
+  return { connections: connections$ || [], loading: !connections$ };
 }

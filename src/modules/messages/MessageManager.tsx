@@ -1,5 +1,4 @@
 import { BackButton } from "@/components/ui/BackButton";
-import { useAuth } from "@/contexts/AuthContext";
 import {
   CircularProgress,
   ToggleButton,
@@ -8,6 +7,7 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { MessageItem } from "./components/MessageItem";
 import { MessageModal } from "./components/MessageModal";
 import { MessageStatus, useMessagesListener } from "./MessagesModel";

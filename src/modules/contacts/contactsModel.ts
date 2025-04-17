@@ -1,4 +1,4 @@
-import { useRxObservable } from "@/hooks/useRxObservable";
+import useObservable from "@/hooks/useObservable";
 import { db } from "@/services/firebase";
 import {
   addDoc,
@@ -9,7 +9,6 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-import { useMemo } from "react";
 import { collectionData } from "rxfire/firestore";
 import { Observable } from "rxjs";
 
@@ -38,7 +37,7 @@ export async function addContact(
 ) {
   if (!name.trim() || !phone.trim()) return;
 
-  await addDoc(collection(db, "contacts"), {
+  await addDoc(contactsCollection, {
     name: name.trim(),
     phone: phone.trim(),
     connectionId,
@@ -47,19 +46,15 @@ export async function addContact(
 }
 
 export async function deleteContact(id: string) {
-  await deleteDoc(doc(db, "contacts", id));
+  await deleteDoc(doc(contactsCollection, id));
 }
 
 export function useContactsListener(connectionId: string) {
-  const observable$ = useMemo(
+  const contacts$ = useObservable(
     () => listenContacts(connectionId),
-    [connectionId]
+    [connectionId],
+    []
   );
-  const { data: contacts, loading } = useRxObservable<Contact[]>(observable$);
 
-  if (!contacts) {
-    return { contacts: [], loading };
-  }
-
-  return { contacts, loading };
+  return { contacts: contacts$ || [], loading: !contacts$ };
 }

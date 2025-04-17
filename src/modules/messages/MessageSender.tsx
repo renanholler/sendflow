@@ -1,5 +1,4 @@
 import { BackButton } from "@/components/ui/BackButton";
-import { useAuth } from "@/contexts/AuthContext";
 import {
   Button,
   Checkbox,
@@ -10,7 +9,8 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useContactsListener } from "../contacts/ContactsModel";
+import { useAuth } from "../auth/AuthContext";
+import { Contact, useContactsListener } from "../contacts/ContactsModel";
 import { addMessage, MessageStatus } from "./MessagesModel";
 
 export function MessageSender() {
@@ -32,7 +32,7 @@ export function MessageSender() {
     if (selectedContacts.length === contacts.length) {
       setSelectedContacts([]);
     } else {
-      setSelectedContacts(contacts.map((c) => c.id));
+      setSelectedContacts(contacts.map((c: Contact) => c.id));
     }
   };
 
@@ -104,7 +104,7 @@ export function MessageSender() {
         className="mb-4 border rounded max-h-40 overflow-y-auto flex flex-wrap gap-2"
         style={{ maxHeight: "200px" }}
       >
-        {contacts.map((contact) => (
+        {contacts.map((contact: Contact) => (
           <div
             className="hover:bg-gray-100 p-2 rounded w-fit"
             style={{ flex: "0 0 auto" }}

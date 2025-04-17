@@ -1,10 +1,11 @@
 import { BackButton } from "@/components/ui/BackButton";
 import { Button, TextField } from "@mui/material";
 import { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../auth/AuthContext";
 import { ConnectionItem } from "./components/ConnectionItem";
 import {
   addConnection,
+  Connection,
   deleteConnection,
   useConnectionsListener,
 } from "./ConnectionsModel";
@@ -50,7 +51,7 @@ export function Connections() {
       </div>
 
       <ul className="mt-6 space-y-2">
-        {connections?.map((conn) => (
+        {connections?.map((conn: Connection) => (
           <ConnectionItem
             key={conn.id}
             id={conn.id}
