@@ -2,6 +2,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import {
   Button,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   TextField,
   Typography,
@@ -16,7 +17,9 @@ import { addMessage, MessageStatus } from "./MessagesModel";
 export function MessageSender() {
   const { user } = useAuth();
   const { id: connectionId } = useParams();
-  const { contacts } = useContactsListener(connectionId || "");
+  const { data: contacts, loading } = useContactsListener({
+    connectionId: connectionId || "",
+  });
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [schedule, setSchedule] = useState("");
@@ -60,6 +63,14 @@ export function MessageSender() {
     setSelectedContacts([]);
     navigate("/dashboard");
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh]">
+        <CircularProgress color="primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[84vh] p-6">

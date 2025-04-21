@@ -5,7 +5,7 @@ export default function useObservable<T>(
   observable: () => Observable<T>,
   deps: DependencyList = [],
   initialState?: T
-): T | undefined {
+): { data: T | undefined; loading: boolean } {
   const [state, setState] = useState(initialState);
 
   useEffect(() => {
@@ -17,5 +17,8 @@ export default function useObservable<T>(
     };
   }, deps); // eslint-disable-line
 
-  return state;
+  return {
+    data: state,
+    loading: state === undefined,
+  };
 }

@@ -1,13 +1,14 @@
 import { Button } from "@mui/material";
 
-type Props = {
+interface ContactItemProps {
   id: string;
   name: string;
   phone: string;
   onDelete: (id: string) => void;
-};
+}
 
-export function ContactItem({ id, name, phone, onDelete }: Props) {
+export function ContactItem(props: ContactItemProps) {
+  const { id, name, phone, onDelete } = props;
   return (
     <li className="bg-white p-4 rounded shadow border border-gray-200 flex justify-between items-center ">
       <div>

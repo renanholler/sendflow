@@ -14,7 +14,9 @@ import {
 export function Contacts() {
   const { id: connectionId } = useParams();
   const [form, setForm] = useState({ name: "", phone: "" });
-  const { contacts, loading } = useContactsListener(connectionId || "");
+  const { data: contacts, loading } = useContactsListener({
+    connectionId: connectionId || "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

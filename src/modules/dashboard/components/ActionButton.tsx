@@ -1,11 +1,12 @@
 import { Button } from "@mui/material";
 
-type Props = {
+interface ActionButtonProps {
   title: string;
   clickHandler: () => void;
-};
+}
 
-export function ActionButton({ title, clickHandler }: Props) {
+export function ActionButton(props: ActionButtonProps) {
+  const { title, clickHandler } = props;
   return (
     <Button
       variant="contained"

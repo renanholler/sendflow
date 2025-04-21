@@ -13,7 +13,9 @@ import {
 export function Connections() {
   const { user } = useAuth();
   const [newName, setNewName] = useState("");
-  const { connections } = useConnectionsListener(user?.uid || "");
+  const { data: connections } = useConnectionsListener({
+    userId: user?.uid || "",
+  });
 
   if (!user) return null;
 

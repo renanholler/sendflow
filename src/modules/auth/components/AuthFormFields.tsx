@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 
-type AuthFormFieldsProps = {
+interface AuthFormFieldsProps {
   form: {
     name: string;
     email: string;
@@ -8,9 +8,10 @@ type AuthFormFieldsProps = {
   };
   mode: "signin" | "signup";
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
+}
 
-export function AuthFormFields({ form, mode, onChange }: AuthFormFieldsProps) {
+export function AuthFormFields(props: AuthFormFieldsProps) {
+  const { form, mode, onChange } = props;
   return (
     <>
       {mode === "signup" && (
@@ -21,16 +22,13 @@ export function AuthFormFields({ form, mode, onChange }: AuthFormFieldsProps) {
           <TextField
             id="name"
             name="name"
-            type="text"
             value={form.name}
             onChange={onChange}
             fullWidth
-            variant="outlined"
-            placeholder="Seu nome"
+            required
           />
         </div>
       )}
-
       <div className="mb-4">
         <label htmlFor="email" className="block text-sm font-medium mb-1">
           Email
@@ -42,11 +40,9 @@ export function AuthFormFields({ form, mode, onChange }: AuthFormFieldsProps) {
           value={form.email}
           onChange={onChange}
           fullWidth
-          variant="outlined"
-          placeholder="exemplo@email.com"
+          required
         />
       </div>
-
       <div className="mb-4">
         <label htmlFor="password" className="block text-sm font-medium mb-1">
           Senha
@@ -58,8 +54,7 @@ export function AuthFormFields({ form, mode, onChange }: AuthFormFieldsProps) {
           value={form.password}
           onChange={onChange}
           fullWidth
-          variant="outlined"
-          placeholder="••••••••"
+          required
         />
       </div>
     </>

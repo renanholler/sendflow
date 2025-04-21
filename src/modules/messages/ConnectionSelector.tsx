@@ -16,7 +16,9 @@ export function ConnectionSelector(props: ConnectionSelectorProps) {
   const { mode } = props;
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { connections, loading } = useConnectionsListener(user?.uid || "");
+  const { data: connections, loading } = useConnectionsListener({
+    userId: user?.uid || "",
+  });
 
   if (loading) {
     return (

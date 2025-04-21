@@ -1,4 +1,4 @@
-import useObservable from "@/hooks/useObservable";
+import { useCollectionListener } from "@/hooks/useCollectionListener";
 import { db } from "@/services/firebase";
 import {
   addDoc,
@@ -12,10 +12,6 @@ import {
 } from "firebase/firestore";
 import { collectionData } from "rxfire/firestore";
 import { Observable } from "rxjs";
-
-export enum Collection {
-  MESSAGES = "messages",
-}
 
 export enum MessageStatus {
   AGENDADO = "agendado",
@@ -32,9 +28,15 @@ export type Message = {
   status: MessageStatus;
 };
 
-const messagesCollection = collection(db, Collection.MESSAGES);
+interface ListenMessagesParams {
+  userId: string;
+  connectionId: string;
+}
 
-export function listenMessages(userId: string, connectionId: string) {
+const messagesCollection = collection(db, "messages");
+
+export function listenMessages(params: ListenMessagesParams) {
+  const { userId, connectionId } = params;
   const q = query(
     messagesCollection,
     where("userId", "==", userId),
@@ -56,12 +58,9 @@ export async function updateMessageStatus(id: string, status: MessageStatus) {
   });
 }
 
-export function useMessagesListener(userId: string, connectionId: string) {
-  const messages$ = useObservable(
-    () => listenMessages(userId, connectionId),
-    [userId, connectionId],
-    []
+export function useMessagesListener(params: ListenMessagesParams) {
+  return useCollectionListener(
+    () => listenMessages(params),
+    Object.values(params)
   );
-
-  return { messages: messages$ || [], loading: !messages$ };
 }

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 import { MessageStatus } from "../MessagesModel";
 
-type Props = {
+interface MessageModalProps {
   message: {
     id: string;
     text: string;
@@ -11,9 +11,10 @@ type Props = {
     status: MessageStatus;
   } | null;
   onClose: () => void;
-};
+}
 
-export function MessageModal({ message, onClose }: Props) {
+export function MessageModal(props: MessageModalProps) {
+  const { message, onClose } = props;
   return (
     <Dialog
       open={!!message}

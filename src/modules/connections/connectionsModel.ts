@@ -1,4 +1,4 @@
-import useObservable from "@/hooks/useObservable";
+import { useCollectionListener } from "@/hooks/useCollectionListener";
 import { db } from "@/services/firebase";
 import {
   addDoc,
@@ -26,7 +26,14 @@ export enum ConnectionMode {
   LIST = "list",
 }
 
-export function listenConnections(userId: string): Observable<Connection[]> {
+interface ListenConnectionsParams {
+  userId: string;
+}
+
+export function listenConnections(
+  params: ListenConnectionsParams
+): Observable<Connection[]> {
+  const { userId } = params;
   const q = query(connectionsCollection, where("userId", "==", userId));
   return collectionData(q, { idField: "id" }) as Observable<Connection[]>;
 }
@@ -45,12 +52,9 @@ export async function deleteConnection(id: string) {
   await deleteDoc(doc(connectionsCollection, id));
 }
 
-export function useConnectionsListener(userId: string) {
-  const connections$ = useObservable(
-    () => listenConnections(userId),
-    [userId],
-    []
+export function useConnectionsListener(params: ListenConnectionsParams) {
+  return useCollectionListener(
+    () => listenConnections(params),
+    Object.values(params)
   );
-
-  return { connections: connections$ || [], loading: !connections$ };
 }

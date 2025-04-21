@@ -8,22 +8,27 @@ type AuthContextType = {
   loading: boolean;
 };
 
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider(props: AuthProviderProps) {
+  const { children } = props;
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const subscription = authState(auth).subscribe((user) => {
+    const sub = authState(auth).subscribe((user) => {
       setUser(user);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => sub.unsubscribe();
   }, []);
 
   return (

@@ -28,10 +28,10 @@ export function MessageManager() {
   );
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const handleClose = () => setSelectedMessage(null);
-  const { messages, loading } = useMessagesListener(
-    user?.uid || "",
-    connectionId || ""
-  );
+  const { data: messages, loading } = useMessagesListener({
+    userId: user?.uid || "",
+    connectionId: connectionId || "",
+  });
 
   const filtered =
     statusFilter === "all"

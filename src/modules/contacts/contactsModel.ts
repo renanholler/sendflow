@@ -1,4 +1,4 @@
-import useObservable from "@/hooks/useObservable";
+import { useCollectionListener } from "@/hooks/useCollectionListener";
 import { db } from "@/services/firebase";
 import {
   addDoc,
@@ -20,9 +20,14 @@ export type Contact = {
   createdAt?: Date;
 };
 
+interface ListenContactsParams {
+  connectionId: string;
+}
+
 const contactsCollection = collection(db, "contacts");
 
-export function listenContacts(connectionId: string) {
+export function listenContacts(params: ListenContactsParams) {
+  const { connectionId } = params;
   const q = query(
     contactsCollection,
     where("connectionId", "==", connectionId)
@@ -49,12 +54,9 @@ export async function deleteContact(id: string) {
   await deleteDoc(doc(contactsCollection, id));
 }
 
-export function useContactsListener(connectionId: string) {
-  const contacts$ = useObservable(
-    () => listenContacts(connectionId),
-    [connectionId],
-    []
+export function useContactsListener(params: ListenContactsParams) {
+  return useCollectionListener(
+    () => listenContacts(params),
+    Object.values(params)
   );
-
-  return { contacts: contacts$ || [], loading: !contacts$ };
 }
